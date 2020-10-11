@@ -39,17 +39,24 @@ main(int argc, const char** argv)
         std::cerr << "Could not open image :(" << std::endl;
         return -1;
     }
-    // create list of images using provided file paths
-    // std::vector<img_struct_t> src_image_vector = get_images_from_path_vector(file_paths);
-    std::vector<img_struct_t> dst_image_vector;
+
     cv::Mat down_image = og_image->image;
+    cv::imshow("original", og_image->image);
+    cv::waitKey(0);
+
     for (int i = 0; i < depth; ++i) {
         down_image = downsample_delete(down_image);
         std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
-        cv::imshow("hi", down_image);
+        cv::imshow("down", down_image);
         cv::waitKey(0);
     }
-
+    cv::Mat up_image = down_image;
+    for (int i = 0; i < depth; ++i) {
+        up_image = upsample_replicate(up_image);
+        std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
+        cv::imshow("up", up_image);
+        cv::waitKey(0);
+    }
     // for (img_struct_t image_struct : src_image_vector) {
         // cv::Mat new_img = scale_image(image_struct.image, rows, cols, preserve_aspect, cv::INTER_LANCZOS4);
     //     if (grayscale) {

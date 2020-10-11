@@ -15,5 +15,6 @@ cv::Mat scale_image(cv::Mat src, uint rows, uint cols, bool preserve_aspect, cv:
 cv::Size get_size_aspect(cv::Mat src, uint rows, uint cols);
 cv::Mat apply_grayscale(cv::Mat src);
 cv::Mat downsample_delete(cv::Mat src);
+cv::Mat upsample_replicate(cv::Mat src);
 
 #endif

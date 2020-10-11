@@ -67,7 +67,7 @@ parse_arguments(
 
     try {
         *depth = (uint) parser.get<uint>("d") ? parser.get<uint>("d") : 1;
-        if (*depth > 32) std::cout << "You're wasting your time." << std::endl;
+        if (*depth > 10) std::cout << "You're wasting your time." << std::endl;
     } catch (...) {
         std::cerr << "Failed to parse depth argument." << std::endl;
         return -1;

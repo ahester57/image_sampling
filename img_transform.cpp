@@ -60,3 +60,12 @@ downsample_delete(cv::Mat src)
     src.release();
     return dst;
 }
+
+cv::Mat
+upsample_replicate(cv::Mat src)
+{
+    cv::Mat dst = src;
+    cv::pyrUp(src, dst, cv::Size(src.cols * 2, src.rows * 2));
+    src.release();
+    return dst;
+}
