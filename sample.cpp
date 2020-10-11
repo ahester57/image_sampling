@@ -32,13 +32,18 @@ main(int argc, const char** argv)
     );
     if (parse_result != 1) return parse_result;
 
-    // open input directory and return list of relative file paths
-    // std::vector<std::string> file_paths = open_dir(input_dir_path.c_str());
+    // open image
+    img_struct_t* og_image = open_image(input_image.c_str());
 
+    if (og_image == NULL) {
+        std::cerr << "Could not open image :(" << std::endl;
+        return -1;
+    }
     // create list of images using provided file paths
     // std::vector<img_struct_t> src_image_vector = get_images_from_path_vector(file_paths);
     std::vector<img_struct_t> dst_image_vector;
-
+    cv::imshow("hi", og_image->image);
+    cv::waitKey(0);
     // for (img_struct_t image_struct : src_image_vector) {
         // cv::Mat new_img = scale_image(image_struct.image, rows, cols, preserve_aspect, cv::INTER_LANCZOS4);
     //     if (grayscale) {

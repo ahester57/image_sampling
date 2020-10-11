@@ -117,6 +117,29 @@ get_images_from_path_vector(std::vector<std::string> file_paths)
     return images;
 }
 
+img_struct_t*
+open_image(std::string file_path)
+{
+    try {
+        // attempt to read the image
+        cv::Mat src = cv::imread(file_path);
+        if (src.empty()) {
+            std::cerr << "Cannot open input image: " + file_path << std::endl;
+            return NULL;
+        }
+        std::cout << "Image size is:\t\t\t" << src.cols << "x" << src.rows << std::endl;
+
+        // create the img_struct_t
+        return new img_struct_t {src, file_path, file_path};
+    } catch (std::string &str) {
+        std::cerr << "Error: " << file_path << ": " << str << std::endl;
+        return NULL;
+    } catch (cv::Exception &e) {
+        std::cerr << "Error: " << file_path << ": " << e.msg << std::endl;
+        return NULL;
+    }
+}
+
 int
 create_dir_recursive(std::string dst_file)
 {

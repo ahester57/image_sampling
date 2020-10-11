@@ -56,7 +56,7 @@ parse_arguments(
 
     try {
         *sampling_method = (uint) parser.get<uint>("s") ? parser.get<uint>("s") : 1;
-        if (*sampling_method != 1 || *sampling_method != 2) {
+        if (*sampling_method != 1 && *sampling_method != 2) {
             std::cerr << "Sampling method can only be 1 or 2." << std::endl;
             return -1;
         }
