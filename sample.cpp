@@ -16,41 +16,39 @@ int
 main(int argc, const char** argv)
 {
     // CLA variables
-    uint rows;
-    uint cols;
-    bool preserve_aspect;
+    uint sampling_method;
+    uint depth;
+    uint intensity;
     bool grayscale;
-    std::string input_dir_path;
+    std::string input_image;
     std::string output_dir_path;
-    std::string file_type;
 
     // parse and save command line args
     int parse_result = parse_arguments(
         argc, argv,
-        &input_dir_path, &output_dir_path,
-        &rows, &cols,
-        &preserve_aspect, &grayscale,
-        &file_type
+        &input_image, &output_dir_path,
+        &sampling_method, &depth,
+        &intensity
     );
     if (parse_result != 1) return parse_result;
 
     // open input directory and return list of relative file paths
-    std::vector<std::string> file_paths = open_dir(input_dir_path.c_str());
+    // std::vector<std::string> file_paths = open_dir(input_dir_path.c_str());
 
     // create list of images using provided file paths
-    std::vector<img_struct_t> src_image_vector = get_images_from_path_vector(file_paths);
+    // std::vector<img_struct_t> src_image_vector = get_images_from_path_vector(file_paths);
     std::vector<img_struct_t> dst_image_vector;
 
-    for (img_struct_t image_struct : src_image_vector) {
-        cv::Mat new_img = scale_image(image_struct.image, rows, cols, preserve_aspect, cv::INTER_LANCZOS4);
-        if (grayscale) {
-            new_img = apply_grayscale(new_img);
-        }
-        dst_image_vector.push_back({new_img, image_struct.metadata});
-        image_struct.image.release();
-        // cv::imshow("hi", new_img);
-        // cv::waitKey(0);
-    }
-    write_to_dir(dst_image_vector, output_dir_path, file_type);
+    // for (img_struct_t image_struct : src_image_vector) {
+        // cv::Mat new_img = scale_image(image_struct.image, rows, cols, preserve_aspect, cv::INTER_LANCZOS4);
+    //     if (grayscale) {
+    //         new_img = apply_grayscale(new_img);
+    //     }
+    //     dst_image_vector.push_back({new_img, image_struct.metadata});
+    //     image_struct.image.release();
+    //     // cv::imshow("hi", new_img);
+    //     // cv::waitKey(0);
+    // }
+    // write_to_dir(dst_image_vector, output_dir_path, file_type);
 	return 0;
 }

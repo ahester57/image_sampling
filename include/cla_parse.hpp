@@ -9,15 +9,13 @@
 #include <iostream>
 
 int parse_arguments(
-    const int argc,
+    int argc,
     const char** argv,
-    std::string* input_dir_path,
+    std::string* input_image,
     std::string* output_dir_path,
-    uint* rows,
-    uint* cols,
-    bool* preserve_aspect,
-    bool* grayscale,
-    std::string* file_type
+    uint* sampling_method,
+    uint* depth,
+    uint* intensity
 );
 
 #endif

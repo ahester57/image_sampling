@@ -13,23 +13,19 @@ int
 parse_arguments(
     int argc,
     const char** argv,
-    std::string* input_dir_path,
+    std::string* input_image,
     std::string* output_dir_path,
-    uint* rows,
-    uint* cols,
-    bool* preserve_aspect,
-    bool* grayscale,
-    std::string* file_type
+    uint* sampling_method,
+    uint* depth,
+    uint* intensity
 ) {
     cv::String keys =
-        "{@indir      |<none>| input directory}"             // input directory is the first argument (positional)
-        "{@outdir     |./out | output directory}"
-        "{rows r      |1080  | --rows=1080}"                 // optional, default value 1080
-        "{cols c      |1920  | --cols=1920}"                 // optional, default value 1920
-        "{help h      |      | show help message}"           // optional, show help optional
-        "{aspect a    |      | preserve aspect ratio}"
-        "{grayscale g |      | output grayscale}"
-        "{type t      |jpg   | output filetype jpg, tif, bmp, or png}";
+        "{@image       |<none>| input image}"             // input image is the first argument (positional)
+        "{@outdir      |./out | output directory}"
+        "{sampling s   |1     | 1 = deletion/duplication \n\t\t2 = averaging/interpolation}"
+        "{depth d      |1     | layers of downsampling}"                 // optional, 
+        "{intensity i  |1     | number of intensity levels}"                 // optional, 
+        "{help h       |      | show help message}";           // optional
 
     cv::CommandLineParser parser(argc, argv, keys);
 
@@ -38,10 +34,16 @@ parse_arguments(
         return 0;
     }
 
+    if (!parser.check()) {
+        parser.printErrors();
+        parser.printMessage();
+        return -1;
+    }
+
     try {
-        *input_dir_path = (std::string) parser.get<std::string>(0).c_str();
+        *input_image = (std::string) parser.get<std::string>(0).c_str();
     } catch (...) {
-        std::cerr << "Failed to parse input directory argument!:" << std::endl;
+        std::cerr << "Failed to parse input image argument!:" << std::endl;
         return -1;
     }
 
@@ -53,48 +55,34 @@ parse_arguments(
     }
 
     try {
-        *rows = (uint) parser.get<uint>("r") ? parser.get<uint>("r") : 1080;
-        *cols = (uint) parser.get<uint>("c") ? parser.get<uint>("c") : 1920;
+        *sampling_method = (uint) parser.get<uint>("s") ? parser.get<uint>("s") : 1;
+        if (*sampling_method != 1 || *sampling_method != 2) {
+            std::cerr << "Sampling method can only be 1 or 2." << std::endl;
+            return -1;
+        }
     } catch (...) {
-        std::cerr << "Failed to parse size argument." << std::endl;
+        std::cerr << "Failed to parse sampling_method argument." << std::endl;
         return -1;
     }
 
     try {
-        *preserve_aspect = (bool) parser.has("a") ? true : false;
+        *depth = (uint) parser.get<uint>("d") ? parser.get<uint>("d") : 1;
     } catch (...) {
-        std::cerr << "Failed to parse preserve_aspect argument." << std::endl;
+        std::cerr << "Failed to parse depth argument." << std::endl;
         return -1;
     }
 
     try {
-        *grayscale = (bool) parser.has("g") ? true : false;
+        *intensity = (uint) parser.get<uint>("i") ? parser.get<uint>("i") : 1;
+        if (*intensity < 1 || *intensity > 7) {
+            std::cerr << "Intensity can only be from 1 to 7." << std::endl;
+            return -1;
+        }
     } catch (...) {
-        std::cerr << "Failed to parse grayscale argument." << std::endl;
+        std::cerr << "Failed to parse intensity argument." << std::endl;
         return -1;
     }
 
-    try {
-        *file_type = (std::string) parser.get<std::string>("t").c_str();
-    } catch (...) {
-        std::cerr << "Failed to parse file type argument!:" << std::endl;
-        return -1;
-    }
-
-    if (*rows == 0 || *cols == 0) {
-        std::cerr << "Dimensions cannot be zero." << std::endl;
-        return -1;
-    }
-    if (*rows > 1080 || *cols > 1920) {
-        std::cerr << "Dimensions too large. Max 1920x1080" << std::endl;
-        return -1;
-    }
-
-    if (!parser.check()) {
-        parser.printErrors();
-        parser.printMessage();
-        return -1;
-    }
 
     return 1;
 }

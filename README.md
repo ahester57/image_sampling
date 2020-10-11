@@ -21,6 +21,22 @@ How do you accomplish these tasks without losing the information contents of the
 ### Usage
 
 ```
+Usage: sample.exe [params] image outdir
+
+        -d, --depth (value:1)
+                layers of downsampling
+        -h, --help (value:true)
+                show help message
+        -i, --intensity (value:1)
+                number of intensity levels
+        -s, --sampling (value:1)
+                1 = deletion/duplication
+                2 = averaging/interpolation
+
+        image (value:<none>)
+                input image
+        outdir (value:./out)
+                output directory
 
 ```
 
