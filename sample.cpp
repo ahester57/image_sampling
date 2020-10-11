@@ -40,23 +40,38 @@ main(int argc, const char** argv)
         return -1;
     }
 
-    cv::Mat down_image = og_image->image;
+    cv::Mat down_image = og_image->image, up_image;
     cv::imshow("original", og_image->image);
     cv::waitKey(0);
 
-    for (int i = 0; i < depth; ++i) {
-        down_image = downsample_delete(down_image);
-        std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
-        cv::imshow("down", down_image);
-        cv::waitKey(0);
+    switch (sampling_method) {
+        case 1:
+            // do deletions/replications
+            std::cout << "Using deletion and replication for sampling." << std::endl;
+            for (int i = 0; i < depth; ++i) {
+                down_image = downsample_delete(down_image);
+                std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
+                cv::imshow("down", down_image);
+                cv::waitKey(0);
+                up_image = down_image;
+                for (int j = 0; j <= i; ++j) {
+                    up_image = upsample_replicate(up_image);
+                    std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
+                    cv::imshow("up", up_image);
+                    cv::waitKey(0);
+                }
+            }
+            break;
+        case 2:
+            // do the averaging/interpolation
+            std::cout << "Using averaging and interpolation for sampling." << std::endl;
+            break;
+        default:
+            // no
+            std::cerr << "You can't do that!" << std::endl;
+            return -1;
     }
-    cv::Mat up_image = down_image;
-    for (int i = 0; i < depth; ++i) {
-        up_image = upsample_replicate(up_image);
-        std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
-        cv::imshow("up", up_image);
-        cv::waitKey(0);
-    }
+
     // for (img_struct_t image_struct : src_image_vector) {
         // cv::Mat new_img = scale_image(image_struct.image, rows, cols, preserve_aspect, cv::INTER_LANCZOS4);
     //     if (grayscale) {
