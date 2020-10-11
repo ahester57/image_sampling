@@ -51,3 +51,12 @@ apply_grayscale(cv::Mat src)
     src.release();
     return dst;
 }
+
+cv::Mat
+downsample_delete(cv::Mat src)
+{
+    cv::Mat dst = src;
+    cv::pyrDown(src, dst, cv::Size(src.cols / 2, src.rows / 2));
+    src.release();
+    return dst;
+}
