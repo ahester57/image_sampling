@@ -15,6 +15,8 @@ void open_dir(const std::string dir_string, const std::string line_prefix, std::
 int is_directory(const char* path);
 std::vector<img_struct_t> get_images_from_path_vector(std::vector<std::string> file_paths);
 img_struct_t* open_image(std::string file_path);
+int create_dir_recursive(std::string dst_file);
 int write_to_dir(std::vector<img_struct_t> image_vector, std::string output_dir, std::string file_type);
+int write_img_to_file(cv::Mat image, std::string output_dir, std::string file_name);
 
 #endif

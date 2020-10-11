@@ -189,3 +189,29 @@ write_to_dir(std::vector<img_struct_t> image_vector, std::string output_dir, std
     }
     return 0;
 }
+
+int
+write_img_to_file(cv::Mat image, std::string output_dir, std::string file_name)
+{
+    try {
+        std::string dst_file = output_dir + "/" + file_name;
+        if (!create_dir_recursive(dst_file)) {
+            return -1;
+        }
+        std::cout << "Writing " << dst_file << std::endl;
+        if (!cv::imwrite(dst_file, image)) {
+            std::cerr << "Could not write file " << dst_file << std::endl;
+        }
+        cv::waitKey(100);
+        std::cout << "Wrote " << dst_file << std::endl;
+    } catch (std::string &str) {
+        std::cerr << "Error: " << str << std::endl;
+        return -1;
+    } catch (cv::Exception &e) {
+        std::cerr << "Error: " << e.msg << std::endl;
+        return -1;
+    } catch (std::runtime_error &re) {
+        std::cerr << "Error: " << re.what() << std::endl;
+    }
+    return 1;
+}

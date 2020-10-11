@@ -13,6 +13,18 @@
 
 
 int
+wait_key()
+{
+    char key_pressed = cv::waitKey(0) & 255;
+    // 'q' or  <escape> quits out
+    if (key_pressed == 27 || key_pressed == 'q') {
+        cv::destroyAllWindows();
+        return 0;
+    }
+    return 1;
+}
+
+int
 main(int argc, const char** argv)
 {
     // CLA variables
@@ -51,14 +63,20 @@ main(int argc, const char** argv)
             for (int i = 0; i < depth; ++i) {
                 down_image = downsample_delete(down_image);
                 std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
+                std::stringstream down_file_name;
+                down_file_name << "output_down_" << i << ".png";
+                write_img_to_file(down_image, output_dir_path, down_file_name.str());
                 cv::imshow("down", down_image);
-                cv::waitKey(0);
+                if (!wait_key()) return 0;
                 up_image = down_image;
                 for (int j = 0; j <= i; ++j) {
                     up_image = upsample_replicate(up_image);
                     std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
+                    std::stringstream up_file_name;
+                    up_file_name << "output_down_" << i << "_up_" << j << ".png";
+                    write_img_to_file(up_image, output_dir_path, up_file_name.str());
                     cv::imshow("up", up_image);
-                    cv::waitKey(0);
+                    if (!wait_key()) return 0;
                 }
             }
             break;
