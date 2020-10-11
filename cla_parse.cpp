@@ -22,7 +22,7 @@ parse_arguments(
     cv::String keys =
         "{@image       |<none>| input image}"             // input image is the first argument (positional)
         "{@outdir      |./out | output directory}"
-        "{sampling s   |1     | 1 = deletion/duplication \n\t\t2 = averaging/interpolation}"
+        "{sampling s   |1     | 1 = deletion/duplication\n\t\t2 = averaging/interpolation\n\t\t3 = pyramids}"
         "{depth d      |1     | layers of downsampling}"                 // optional, 
         "{intensity i  |1     | number of intensity levels}"                 // optional, 
         "{help h       |      | show help message}";           // optional
@@ -56,8 +56,8 @@ parse_arguments(
 
     try {
         *sampling_method = (uint) parser.get<uint>("s") ? parser.get<uint>("s") : 1;
-        if (*sampling_method != 1 && *sampling_method != 2) {
-            std::cerr << "Sampling method can only be 1 or 2." << std::endl;
+        if (*sampling_method < 1 || *sampling_method > 3) {
+            std::cerr << "Sampling method can only be from 1 to 3." << std::endl;
             return -1;
         }
     } catch (...) {

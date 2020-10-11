@@ -55,6 +55,42 @@ apply_grayscale(cv::Mat src)
 cv::Mat
 downsample_delete(cv::Mat src)
 {
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_32F);
+    resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    src.release();
+    return dst;
+}
+
+cv::Mat
+upsample_replicate(cv::Mat src)
+{
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_32F);
+    resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    src.release();
+    return dst;
+}
+
+cv::Mat
+downsample_average(cv::Mat src)
+{
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_32F);
+    resize(src, dst, dst.size(), 0, 0, cv::INTER_LANCZOS4);
+    src.release();
+    return dst;
+}
+
+cv::Mat
+upsample_average(cv::Mat src)
+{
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_32F);
+    resize(src, dst, dst.size(), 0, 0, cv::INTER_LANCZOS4);
+    src.release();
+    return dst;
+}
+
+cv::Mat
+downsample_pyramid(cv::Mat src)
+{
     cv::Mat dst = src;
     cv::pyrDown(src, dst, cv::Size(src.cols / 2, src.rows / 2));
     src.release();
@@ -62,7 +98,7 @@ downsample_delete(cv::Mat src)
 }
 
 cv::Mat
-upsample_replicate(cv::Mat src)
+upsample_pyramid(cv::Mat src)
 {
     cv::Mat dst = src;
     cv::pyrUp(src, dst, cv::Size(src.cols * 2, src.rows * 2));

@@ -25,6 +25,38 @@ wait_key()
 }
 
 int
+run_spatial_sampling(
+    cv::Mat down_image,
+    uint depth,
+    std::string output_dir_path,
+    std::function<cv::Mat(cv::Mat)> down_function,
+    std::function<cv::Mat(cv::Mat)> up_function
+)
+{
+    cv::Mat up_image;
+    for (int i = 0; i < depth; ++i) {
+        down_image = down_function(down_image);
+        std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
+        std::stringstream down_file_name;
+        down_file_name << "output_down_" << i << ".png";
+        write_img_to_file(down_image, output_dir_path, down_file_name.str());
+        cv::imshow(down_file_name.str(), down_image);
+        if (!wait_key()) return 0;
+        up_image = down_image;
+        for (int j = 0; j <= i; ++j) {
+            up_image = up_function(up_image);
+            std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
+            std::stringstream up_file_name;
+            up_file_name << "output_down_" << i << "_up_" << j << ".png";
+            write_img_to_file(up_image, output_dir_path, up_file_name.str());
+            cv::imshow(up_file_name.str(), up_image);
+            if (!wait_key()) return 0;
+        }
+    }
+    return 1;
+}
+
+int
 main(int argc, const char** argv)
 {
     // CLA variables
@@ -60,29 +92,20 @@ main(int argc, const char** argv)
         case 1:
             // do deletions/replications
             std::cout << "Using deletion and replication for sampling." << std::endl;
-            for (int i = 0; i < depth; ++i) {
-                down_image = downsample_delete(down_image);
-                std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
-                std::stringstream down_file_name;
-                down_file_name << "output_down_" << i << ".png";
-                write_img_to_file(down_image, output_dir_path, down_file_name.str());
-                cv::imshow("down", down_image);
-                if (!wait_key()) return 0;
-                up_image = down_image;
-                for (int j = 0; j <= i; ++j) {
-                    up_image = upsample_replicate(up_image);
-                    std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
-                    std::stringstream up_file_name;
-                    up_file_name << "output_down_" << i << "_up_" << j << ".png";
-                    write_img_to_file(up_image, output_dir_path, up_file_name.str());
-                    cv::imshow("up", up_image);
-                    if (!wait_key()) return 0;
-                }
-            }
+            if (!run_spatial_sampling(down_image, depth, output_dir_path, downsample_delete, upsample_replicate))
+                return 0;
             break;
         case 2:
             // do the averaging/interpolation
             std::cout << "Using averaging and interpolation for sampling." << std::endl;
+            if (!run_spatial_sampling(down_image, depth, output_dir_path, downsample_average, upsample_average))
+                return 0;
+            break;
+        case 3:
+            // do the pyraminds
+            std::cout << "Using pyramids for sampling." << std::endl;
+            if (!run_spatial_sampling(down_image, depth, output_dir_path, downsample_pyramid, upsample_pyramid))
+                return 0;
             break;
         default:
             // no
