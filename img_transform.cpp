@@ -51,7 +51,7 @@ get_size_aspect(cv::Mat src, uint rows, uint cols)
 cv::Mat
 apply_grayscale(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(src.size(), CV_64FC1);
+    cv::Mat dst = cv::Mat::zeros(src.size(), CV_8U);
     cv::cvtColor(src, dst, cv::COLOR_BGR2GRAY);
     src.release();
     return dst;
@@ -60,8 +60,18 @@ apply_grayscale(cv::Mat src)
 cv::Mat
 downsample_delete(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_64F);
-    resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), src.type());
+    // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    std::cout<<src.channels()<<std::endl;
+    for (int r = 0; r < src.rows-1; r+=2) {
+        for (int c = 0; c < src.cols-1; c+=2) {
+            if (src.channels() == 1) {
+                dst.at<uchar>(r/2, c/2) = src.at<uchar>(r, c);
+            } else if (src.channels() == 3) {
+                dst.at<cv::Vec3b>(r/2, c/2) = src.at<cv::Vec3b>(r, c);
+            }
+        }
+    }
     src.release();
     return dst;
 }
@@ -69,8 +79,23 @@ downsample_delete(cv::Mat src)
 cv::Mat
 upsample_replicate(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_64F);
-    resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), src.type());
+    // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    for (int r = 0; r < src.rows-1; r++) {
+        for (int c = 0; c < src.cols-1; c++) {
+            if (src.channels() == 1) {
+                dst.at<uchar>(r*2, c*2) = src.at<uchar>(r, c);
+                dst.at<uchar>(r*2, c*2+1) = src.at<uchar>(r, c);
+                dst.at<uchar>(r*2+1, c*2) = src.at<uchar>(r, c);
+                dst.at<uchar>(r*2+1, c*2+1) = src.at<uchar>(r, c);
+            } else if (src.channels() == 3) {
+                dst.at<cv::Vec3b>(r*2, c*2) = src.at<cv::Vec3b>(r, c);
+                dst.at<cv::Vec3b>(r*2, c*2+1) = src.at<cv::Vec3b>(r, c);
+                dst.at<cv::Vec3b>(r*2+1, c*2) = src.at<cv::Vec3b>(r, c);
+                dst.at<cv::Vec3b>(r*2+1, c*2+1) = src.at<cv::Vec3b>(r, c);
+            }
+        }
+    }
     src.release();
     return dst;
 }
@@ -78,7 +103,7 @@ upsample_replicate(cv::Mat src)
 cv::Mat
 downsample_average(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_64F);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), src.type());
     resize(src, dst, dst.size(), 0, 0, cv::INTER_LANCZOS4);
     src.release();
     return dst;
@@ -87,7 +112,7 @@ downsample_average(cv::Mat src)
 cv::Mat
 upsample_average(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_64F);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), src.type());
     resize(src, dst, dst.size(), 0, 0, cv::INTER_LANCZOS4);
     src.release();
     return dst;

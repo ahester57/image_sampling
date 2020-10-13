@@ -201,6 +201,7 @@ write_img_to_file(cv::Mat image, std::string output_dir, std::string file_name)
     try {
         std::string dst_file = output_dir + "/" + file_name;
         if (!create_dir_recursive(dst_file)) {
+            std::cerr << "Could not create dir." << std::endl;
             return -1;
         }
         std::cout << "Writing " << dst_file << std::endl;

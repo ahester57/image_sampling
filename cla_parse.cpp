@@ -17,14 +17,16 @@ parse_arguments(
     std::string* output_dir_path,
     uint* sampling_method,
     uint* depth,
-    uint* intensity
+    uint* intensity,
+    bool* grayscale
 ) {
     cv::String keys =
         "{@image       |<none>| input image}"             // input image is the first argument (positional)
         "{@outdir      |./out | output directory}"
         "{sampling s   |1     | 1 = deletion/duplication\n\t\t2 = averaging/interpolation\n\t\t3 = pyramids}"
         "{depth d      |1     | layers of downsampling}"                 // optional, 
-        "{intensity i  |1     | number of intensity levels}"                 // optional, 
+        "{intensity i  |1     | number of intensity levels}"                 // optional,
+        "{grayscale g |      | output grayscale}"
         "{help h       |      | show help message}";           // optional
 
     cv::CommandLineParser parser(argc, argv, keys);
@@ -62,6 +64,13 @@ parse_arguments(
         }
     } catch (...) {
         std::cerr << "Failed to parse sampling_method argument." << std::endl;
+        return -1;
+    }
+
+    try {
+        *grayscale = (bool) parser.has("g") ? true : false;
+    } catch (...) {
+        std::cerr << "Failed to parse grayscale argument." << std::endl;
         return -1;
     }
 

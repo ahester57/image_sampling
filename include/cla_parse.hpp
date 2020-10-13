@@ -15,7 +15,8 @@ int parse_arguments(
     std::string* output_dir_path,
     uint* sampling_method,
     uint* depth,
-    uint* intensity
+    uint* intensity,
+    bool* grayscale
 );
 
 #endif

@@ -35,13 +35,16 @@ run_spatial_sampling(
 {
     cv::Mat up_image;
     for (int i = 0; i < depth; ++i) {
+        // run the downsample function
         down_image = down_function(down_image);
         std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
-        std::stringstream down_file_name;
-        down_file_name << "output_down_" << i << ".png";
-        write_img_to_file(down_image, output_dir_path, down_file_name.str());
-        cv::imshow(down_file_name.str(), down_image);
+
+        std::string down_file_name = "output_down_" + std::to_string(i) + ".png";
+        write_img_to_file(down_image, output_dir_path, down_file_name);
+
+        cv::imshow(down_file_name, down_image);
         if (!wait_key()) return 0;
+
         up_image = down_image;
         for (int j = 0; j <= i; ++j) {
             up_image = up_function(up_image);
@@ -72,12 +75,12 @@ main(int argc, const char** argv)
         argc, argv,
         &input_image, &output_dir_path,
         &sampling_method, &depth,
-        &intensity
+        &intensity, &grayscale
     );
     if (parse_result != 1) return parse_result;
 
     // open image
-    img_struct_t* og_image = open_image(input_image.c_str(), true);
+    img_struct_t* og_image = open_image(input_image.c_str(), grayscale);
 
     if (og_image == NULL) {
         std::cerr << "Could not open image :(" << std::endl;
