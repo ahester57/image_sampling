@@ -28,6 +28,7 @@ int
 run_spatial_sampling(
     cv::Mat down_image,
     uint depth,
+    uint intensity_levels,
     std::string output_dir_path,
     std::function<cv::Mat(cv::Mat)> down_function,
     std::function<cv::Mat(cv::Mat)> up_function
@@ -81,13 +82,17 @@ main(int argc, const char** argv)
 
     // open image
     img_struct_t* og_image = open_image(input_image.c_str(), grayscale);
+    cv::Mat down_image = og_image->image;
+
+    if (intensity > 0 && intensity < 8) {
+        down_image = intensity_adjust(og_image->image, intensity);
+    }
 
     if (og_image == NULL) {
         std::cerr << "Could not open image :(" << std::endl;
         return -1;
     }
 
-    cv::Mat down_image = og_image->image;
     cv::imshow("original", og_image->image);
     cv::waitKey(0);
 
@@ -95,19 +100,19 @@ main(int argc, const char** argv)
         case 1:
             // do deletions/replications
             std::cout << "Using deletion and replication for sampling." << std::endl;
-            if (!run_spatial_sampling(down_image, depth, output_dir_path, downsample_delete, upsample_replicate))
+            if (!run_spatial_sampling(down_image, depth, intensity, output_dir_path, downsample_delete, upsample_replicate))
                 return 0;
             break;
         case 2:
             // do the averaging/interpolation
             std::cout << "Using averaging and interpolation for sampling." << std::endl;
-            if (!run_spatial_sampling(down_image, depth, output_dir_path, downsample_average, upsample_average))
+            if (!run_spatial_sampling(down_image, depth, intensity, output_dir_path, downsample_average, upsample_average))
                 return 0;
             break;
         case 3:
             // do the pyraminds
             std::cout << "Using pyramids for sampling." << std::endl;
-            if (!run_spatial_sampling(down_image, depth, output_dir_path, downsample_pyramid, upsample_pyramid))
+            if (!run_spatial_sampling(down_image, depth, intensity, output_dir_path, downsample_pyramid, upsample_pyramid))
                 return 0;
             break;
         default:

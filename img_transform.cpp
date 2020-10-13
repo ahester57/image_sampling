@@ -62,7 +62,14 @@ downsample_delete(cv::Mat src)
 {
     cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), src.type());
     // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
-    std::cout<<src.channels()<<std::endl;
+    if (src.channels() == 1) {
+        std::cout << "Grayscale Image <uchar>" << std::endl;
+    } else if (src.channels() == 3) {
+        std::cout << "Color Image <cv::Vec3b>" << std::endl;
+    } else {
+        std::cout << "Unknown Image. Goodbye." << std::endl;
+        return src;
+    }
     for (int r = 0; r < src.rows-1; r+=2) {
         for (int c = 0; c < src.cols-1; c+=2) {
             if (src.channels() == 1) {
@@ -81,6 +88,14 @@ upsample_replicate(cv::Mat src)
 {
     cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), src.type());
     // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    if (src.channels() == 1) {
+        std::cout << "Grayscale Image <uchar>" << std::endl;
+    } else if (src.channels() == 3) {
+        std::cout << "Color Image <cv::Vec3b>" << std::endl;
+    } else {
+        std::cout << "Unknown Image. Goodbye." << std::endl;
+        return src;
+    }
     for (int r = 0; r < src.rows-1; r++) {
         for (int c = 0; c < src.cols-1; c++) {
             if (src.channels() == 1) {
@@ -132,6 +147,37 @@ upsample_pyramid(cv::Mat src)
 {
     cv::Mat dst = src;
     cv::pyrUp(src, dst, cv::Size(src.cols * 2, src.rows * 2));
+    src.release();
+    return dst;
+}
+
+cv::Mat
+intensity_adjust(cv::Mat src, uint8_t level)
+{
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols, src.rows), src.type());
+    if (src.channels() == 1) {
+        std::cout << "Grayscale Image <uchar>" << std::endl;
+    } else if (src.channels() == 3) {
+        std::cout << "Color Image <cv::Vec3b>" << std::endl;
+    } else {
+        std::cout << "Unknown Image. Goodbye." << std::endl;
+        return src;
+    }
+    for (int r = 0; r < src.rows; r++) {
+        for (int c = 0; c < src.cols; c++) {
+            if (src.channels() == 1) {
+                uchar pixel = src.at<uchar>(r, c);
+                pixel = (pixel >> level) << level;
+                dst.at<uchar>(r, c) = pixel;
+            } else if (src.channels() == 3) {
+                cv::Vec3b pixel = src.at<cv::Vec3b>(r, c);
+                pixel[0] = (pixel[0] >> level) << level;
+                pixel[1] = (pixel[1] >> level) << level;
+                pixel[2] = (pixel[2] >> level) << level;
+                dst.at<cv::Vec3b>(r, c) = pixel;
+            }
+        }
+    }
     src.release();
     return dst;
 }
