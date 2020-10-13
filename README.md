@@ -40,4 +40,14 @@ Usage: sample.exe [params] image outdir
 
 ```
 
+----
+### Analysis
+
+Using Nearest Neighbor Interpolation, the upscaled image looks very blocky and lacking detail.
+
+Using Lanczos interpolation with 8 neighbors, the upscaled image became blurred and checker-like patterns appeared.
+
+Using Pyramid transforms, the upscaled image resembled the original image in look, but lacked any amount of fine detail.
+
+
 https://github.com/ahester57/image_sampling

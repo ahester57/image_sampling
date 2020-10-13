@@ -2,8 +2,13 @@
 // Austin Hester CS542o sept 2020
 // g++.exe (x86_64-posix-seh-rev0, Built by MinGW-W64 project) 8.1.0
 
-#include "./include/img_transform.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
+#include <iostream>
+
+#include "./include/img_transform.hpp"
 
 cv::Mat
 scale_image(cv::Mat src, uint rows, uint cols, bool preserve_aspect, cv::InterpolationFlags inter_mode)
@@ -55,7 +60,7 @@ apply_grayscale(cv::Mat src)
 cv::Mat
 downsample_delete(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_32F);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_64F);
     resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
     src.release();
     return dst;
@@ -64,7 +69,7 @@ downsample_delete(cv::Mat src)
 cv::Mat
 upsample_replicate(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_32F);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_64F);
     resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
     src.release();
     return dst;
@@ -73,7 +78,7 @@ upsample_replicate(cv::Mat src)
 cv::Mat
 downsample_average(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_32F);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), CV_64F);
     resize(src, dst, dst.size(), 0, 0, cv::INTER_LANCZOS4);
     src.release();
     return dst;
@@ -82,7 +87,7 @@ downsample_average(cv::Mat src)
 cv::Mat
 upsample_average(cv::Mat src)
 {
-    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_32F);
+    cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), CV_64F);
     resize(src, dst, dst.size(), 0, 0, cv::INTER_LANCZOS4);
     src.release();
     return dst;

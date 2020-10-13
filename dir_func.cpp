@@ -118,11 +118,16 @@ get_images_from_path_vector(std::vector<std::string> file_paths)
 }
 
 img_struct_t*
-open_image(std::string file_path)
+open_image(std::string file_path, bool grayscale)
 {
     try {
         // attempt to read the image
-        cv::Mat src = cv::imread(file_path);
+        cv::Mat src;
+        if (grayscale)
+            src = cv::imread(file_path, cv::IMREAD_GRAYSCALE);
+        else
+            src = cv::imread(file_path);
+
         if (src.empty()) {
             std::cerr << "Cannot open input image: " + file_path << std::endl;
             return NULL;

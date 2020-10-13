@@ -77,14 +77,14 @@ main(int argc, const char** argv)
     if (parse_result != 1) return parse_result;
 
     // open image
-    img_struct_t* og_image = open_image(input_image.c_str());
+    img_struct_t* og_image = open_image(input_image.c_str(), true);
 
     if (og_image == NULL) {
         std::cerr << "Could not open image :(" << std::endl;
         return -1;
     }
 
-    cv::Mat down_image = og_image->image, up_image;
+    cv::Mat down_image = og_image->image;
     cv::imshow("original", og_image->image);
     cv::waitKey(0);
 
