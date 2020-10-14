@@ -131,7 +131,7 @@ main(int argc, const char** argv)
             return -1;
     }
 
-    if (!run_spatial_sampling(
+    return !run_spatial_sampling(
         down_image,
         depth,
         intensity,
@@ -140,6 +140,5 @@ main(int argc, const char** argv)
         down_function,
         up_function,
         inter_type
-    )) return 0;
-	return -1;
+    );
 }
