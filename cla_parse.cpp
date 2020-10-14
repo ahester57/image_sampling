@@ -25,8 +25,8 @@ parse_arguments(
         "{@outdir      |./out | output directory}"
         "{sampling s   |1     | 1 = deletion/duplication\n\t\t2 = averaging/interpolation\n\t\t3 = pyramids}"
         "{depth d      |1     | layers of downsampling}"                 // optional, 
-        "{intensity i  |1     | number of intensity levels}"                 // optional,
-        "{grayscale g |      | output grayscale}"
+        "{intensity i  |0     | number of intensity levels}"                 // optional,
+        "{grayscale g  |      | output grayscale}"
         "{help h       |      | show help message}";           // optional
 
     cv::CommandLineParser parser(argc, argv, keys);

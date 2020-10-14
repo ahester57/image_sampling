@@ -30,6 +30,7 @@ run_spatial_sampling(
     uint intensity_levels,
     bool grayscale,
     std::string output_dir_path,
+    std::string file_prefix,
     std::function<cv::Mat(cv::Mat)> down_function,
     std::function<cv::Mat(cv::Mat)> up_function,
     std::string inter_type
@@ -37,12 +38,13 @@ run_spatial_sampling(
 {
     cv::Mat up_image;
     std::string grayscale_string = grayscale ? "grayscale_" : "";
+    std::string intensity_string = "intensity_" + std::to_string(intensity_levels) + "_";
     for (int i = 0; i < depth; ++i) {
         // run the downsample function
         down_image = down_function(down_image);
         std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
 
-        std::string down_file_name = "output_down_" + grayscale_string + inter_type + "_" + std::to_string(i) + ".png";
+        std::string down_file_name = file_prefix + "_down_" + grayscale_string + intensity_string + inter_type + "_" + std::to_string(i) + ".png";
         write_img_to_file(down_image, output_dir_path, down_file_name);
 
         cv::imshow(down_file_name, down_image);
@@ -53,7 +55,7 @@ run_spatial_sampling(
             up_image = up_function(up_image);
             std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
 
-            std::string up_file_name = "output_down_" + grayscale_string + inter_type + "_" +  std::to_string(i) + "_up_" + std::to_string(j) + ".png";
+            std::string up_file_name = file_prefix + "down_" + grayscale_string + intensity_string + inter_type + "_" +  std::to_string(i) + "_up_" + std::to_string(j) + ".png";
             write_img_to_file(up_image, output_dir_path, up_file_name);
 
             cv::imshow(up_file_name, up_image);
@@ -137,6 +139,7 @@ main(int argc, const char** argv)
         intensity,
         grayscale,
         output_dir_path,
+        og_image->file_name,
         down_function,
         up_function,
         inter_type
