@@ -61,7 +61,7 @@ cv::Mat
 downsample_delete(cv::Mat src)
 {
     cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols / 2, src.rows / 2), src.type());
-    // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST); <- probably better to use in practice
     if (src.channels() == 1) {
         std::cout << "Grayscale Image <uchar>" << std::endl;
     } else if (src.channels() == 3) {
@@ -73,8 +73,10 @@ downsample_delete(cv::Mat src)
     for (int r = 0; r < src.rows-1; r+=2) {
         for (int c = 0; c < src.cols-1; c+=2) {
             if (src.channels() == 1) {
+                // channels is 1. grayscale
                 dst.at<uchar>(r/2, c/2) = src.at<uchar>(r, c);
             } else if (src.channels() == 3) {
+                // channels is 3. color
                 dst.at<cv::Vec3b>(r/2, c/2) = src.at<cv::Vec3b>(r, c);
             }
         }
@@ -87,7 +89,7 @@ cv::Mat
 upsample_replicate(cv::Mat src)
 {
     cv::Mat dst = cv::Mat::zeros(cv::Size(src.cols * 2, src.rows * 2), src.type());
-    // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST);
+    // resize(src, dst, dst.size(), 0, 0, cv::INTER_NEAREST); <- probably better to use in practice
     if (src.channels() == 1) {
         std::cout << "Grayscale Image <uchar>" << std::endl;
     } else if (src.channels() == 3) {
@@ -96,14 +98,16 @@ upsample_replicate(cv::Mat src)
         std::cout << "Unknown Image. Goodbye." << std::endl;
         return src;
     }
-    for (int r = 0; r < src.rows-1; r++) {
-        for (int c = 0; c < src.cols-1; c++) {
+    for (int r = 0; r < src.rows; r++) {
+        for (int c = 0; c < src.cols; c++) {
             if (src.channels() == 1) {
+                // channels is 1. grayscale
                 dst.at<uchar>(r*2, c*2) = src.at<uchar>(r, c);
                 dst.at<uchar>(r*2, c*2+1) = src.at<uchar>(r, c);
                 dst.at<uchar>(r*2+1, c*2) = src.at<uchar>(r, c);
                 dst.at<uchar>(r*2+1, c*2+1) = src.at<uchar>(r, c);
             } else if (src.channels() == 3) {
+                // channels is 3. color
                 dst.at<cv::Vec3b>(r*2, c*2) = src.at<cv::Vec3b>(r, c);
                 dst.at<cv::Vec3b>(r*2, c*2+1) = src.at<cv::Vec3b>(r, c);
                 dst.at<cv::Vec3b>(r*2+1, c*2) = src.at<cv::Vec3b>(r, c);
@@ -166,10 +170,12 @@ intensity_adjust(cv::Mat src, uint8_t level)
     for (int r = 0; r < src.rows; r++) {
         for (int c = 0; c < src.cols; c++) {
             if (src.channels() == 1) {
+                // channels is 1. grayscale
                 uchar pixel = src.at<uchar>(r, c);
                 pixel = (pixel >> level) << level;
                 dst.at<uchar>(r, c) = pixel;
             } else if (src.channels() == 3) {
+                // channels is 3. color
                 cv::Vec3b pixel = src.at<cv::Vec3b>(r, c);
                 pixel[0] = (pixel[0] >> level) << level;
                 pixel[1] = (pixel[1] >> level) << level;

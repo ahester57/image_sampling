@@ -7,7 +7,6 @@
 
 #include "./include/cla_parse.hpp"
 #include "./include/dir_func.hpp"
-// #include "./include/img_display.hpp"
 #include "./include/img_transform.hpp"
 #include "./include/img_struct.hpp"
 
