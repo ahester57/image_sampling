@@ -102,16 +102,18 @@ upsample_replicate(cv::Mat src)
         for (int c = 0; c < src.cols; c++) {
             if (src.channels() == 1) {
                 // channels is 1. grayscale
-                dst.at<uchar>(r*2, c*2) = src.at<uchar>(r, c);
-                dst.at<uchar>(r*2, c*2+1) = src.at<uchar>(r, c);
-                dst.at<uchar>(r*2+1, c*2) = src.at<uchar>(r, c);
-                dst.at<uchar>(r*2+1, c*2+1) = src.at<uchar>(r, c);
+                uchar pixel = src.at<uchar>(r, c);
+                dst.at<uchar>(r*2, c*2) = pixel;
+                dst.at<uchar>(r*2, c*2+1) = pixel;
+                dst.at<uchar>(r*2+1, c*2) = pixel;
+                dst.at<uchar>(r*2+1, c*2+1) = pixel;
             } else if (src.channels() == 3) {
                 // channels is 3. color
-                dst.at<cv::Vec3b>(r*2, c*2) = src.at<cv::Vec3b>(r, c);
-                dst.at<cv::Vec3b>(r*2, c*2+1) = src.at<cv::Vec3b>(r, c);
-                dst.at<cv::Vec3b>(r*2+1, c*2) = src.at<cv::Vec3b>(r, c);
-                dst.at<cv::Vec3b>(r*2+1, c*2+1) = src.at<cv::Vec3b>(r, c);
+                cv::Vec3b pixel = src.at<cv::Vec3b>(r, c);
+                dst.at<cv::Vec3b>(r*2, c*2) = pixel;
+                dst.at<cv::Vec3b>(r*2, c*2+1) = pixel;
+                dst.at<cv::Vec3b>(r*2+1, c*2) = pixel;
+                dst.at<cv::Vec3b>(r*2+1, c*2+1) = pixel;
             }
         }
     }
