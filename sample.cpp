@@ -29,18 +29,21 @@ run_spatial_sampling(
     cv::Mat down_image,
     uint depth,
     uint intensity_levels,
+    bool grayscale,
     std::string output_dir_path,
     std::function<cv::Mat(cv::Mat)> down_function,
-    std::function<cv::Mat(cv::Mat)> up_function
+    std::function<cv::Mat(cv::Mat)> up_function,
+    std::string inter_type
 )
 {
     cv::Mat up_image;
+    std::string grayscale_string = grayscale ? "grayscale_" : "";
     for (int i = 0; i < depth; ++i) {
         // run the downsample function
         down_image = down_function(down_image);
         std::cout << "Image size is:\t\t\t" << down_image.cols << "x" << down_image.rows << std::endl;
 
-        std::string down_file_name = "output_down_" + std::to_string(i) + ".png";
+        std::string down_file_name = "output_down_" + grayscale_string + inter_type + "_" + std::to_string(i) + ".png";
         write_img_to_file(down_image, output_dir_path, down_file_name);
 
         cv::imshow(down_file_name, down_image);
@@ -50,10 +53,11 @@ run_spatial_sampling(
         for (int j = 0; j <= i; ++j) {
             up_image = up_function(up_image);
             std::cout << "Image size is:\t\t\t" << up_image.cols << "x" << up_image.rows << std::endl;
-            std::stringstream up_file_name;
-            up_file_name << "output_down_" << i << "_up_" << j << ".png";
-            write_img_to_file(up_image, output_dir_path, up_file_name.str());
-            cv::imshow(up_file_name.str(), up_image);
+
+            std::string up_file_name = "output_down_" + grayscale_string + inter_type + "_" +  std::to_string(i) + "_up_" + std::to_string(j) + ".png";
+            write_img_to_file(up_image, output_dir_path, up_file_name);
+
+            cv::imshow(up_file_name, up_image);
             if (!wait_key()) return 0;
         }
     }
@@ -96,24 +100,31 @@ main(int argc, const char** argv)
     cv::imshow("original", og_image->image);
     cv::waitKey(0);
 
+    std::function<cv::Mat(cv::Mat)> down_function;
+    std::function<cv::Mat(cv::Mat)> up_function;
+    std::string inter_type;
+
     switch (sampling_method) {
         case 1:
             // do deletions/replications
             std::cout << "Using deletion and replication for sampling." << std::endl;
-            if (!run_spatial_sampling(down_image, depth, intensity, output_dir_path, downsample_delete, upsample_replicate))
-                return 0;
+            down_function = downsample_delete;
+            up_function = upsample_replicate;
+            inter_type = "deletion";
             break;
         case 2:
             // do the averaging/interpolation
             std::cout << "Using averaging and interpolation for sampling." << std::endl;
-            if (!run_spatial_sampling(down_image, depth, intensity, output_dir_path, downsample_average, upsample_average))
-                return 0;
+            down_function = downsample_average;
+            up_function = upsample_average;
+            inter_type = "average";
             break;
         case 3:
             // do the pyraminds
             std::cout << "Using pyramids for sampling." << std::endl;
-            if (!run_spatial_sampling(down_image, depth, intensity, output_dir_path, downsample_pyramid, upsample_pyramid))
-                return 0;
+            down_function = downsample_pyramid;
+            up_function = upsample_pyramid;
+            inter_type = "pyramid";
             break;
         default:
             // no
@@ -121,16 +132,15 @@ main(int argc, const char** argv)
             return -1;
     }
 
-    // for (img_struct_t image_struct : src_image_vector) {
-        // cv::Mat new_img = scale_image(image_struct.image, rows, cols, preserve_aspect, cv::INTER_LANCZOS4);
-    //     if (grayscale) {
-    //         new_img = apply_grayscale(new_img);
-    //     }
-    //     dst_image_vector.push_back({new_img, image_struct.metadata});
-    //     image_struct.image.release();
-    //     // cv::imshow("hi", new_img);
-    //     // cv::waitKey(0);
-    // }
-    // write_to_dir(dst_image_vector, output_dir_path, file_type);
-	return 0;
+    if (!run_spatial_sampling(
+        down_image,
+        depth,
+        intensity,
+        grayscale,
+        output_dir_path,
+        down_function,
+        up_function,
+        inter_type
+    )) return 0;
+	return -1;
 }
